@@ -27,3 +27,12 @@ describe("GetUser", () => {
     expect(result).toBe(user);
   });
 });
+
+it("should reject when user does not exist", async () => {
+  const repository = new InMemoryUserRepository();
+  const getUser = new GetUser(repository);
+
+  await expect(
+    getUser.execute("non-existing-user-id"),
+  ).rejects.toThrow("User not found.");
+});
