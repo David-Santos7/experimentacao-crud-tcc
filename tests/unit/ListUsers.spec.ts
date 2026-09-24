@@ -40,3 +40,12 @@ describe("ListUsers", () => {
     );
   });
 });
+
+it("should return an empty list when there are no users", async () => {
+  const repository = new InMemoryUserRepository();
+  const listUsers = new ListUsers(repository);
+
+  const users = await listUsers.execute();
+
+  expect(users).toEqual([]);
+});
