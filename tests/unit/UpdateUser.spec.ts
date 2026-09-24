@@ -72,22 +72,49 @@ describe("UpdateUser", () => {
 
     expect(result.id).toBe(user.id);
     expect(result.name).toBe("Maria Silva");
-
-    // Campos não enviados devem ser preservados.
     expect(result.email).toBe("ana@example.com");
     expect(result.role).toBe("USER");
 
-    // createdAt não deve mudar.
     expect(result.createdAt).toEqual(INITIAL_DATE);
 
-    // updatedAt deve representar a atualização.
     expect(result.updatedAt.getTime()).toBeGreaterThan(
       INITIAL_DATE.getTime(),
     );
 
-    // Confirma que a alteração também foi persistida.
     const storedUser = await repository.findById(user.id);
 
     expect(storedUser).toEqual(result);
+  });
+
+  it("should reject when user does not exist", async () => {
+    await expect(
+      updateUser.execute({
+        id: "non-existing-user-id",
+        name: "Maria Silva",
+      }),
+    ).rejects.toThrow("User not found.");
+  });
+
+  it("should reject a duplicated email", async () => {
+    const firstUser = makeUser({
+      id: "user-1",
+      email: "ana@example.com",
+    });
+
+    const secondUser = makeUser({
+      id: "user-2",
+      name: "Maria Silva",
+      email: "maria@example.com",
+    });
+
+    await repository.create(firstUser);
+    await repository.create(secondUser);
+
+    await expect(
+      updateUser.execute({
+        id: "user-2",
+        email: "ANA@EXAMPLE.COM",
+      }),
+    ).rejects.toThrow("User email already exists.");
   });
 });

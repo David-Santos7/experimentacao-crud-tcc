@@ -24,22 +24,9 @@ export class UpdateUser {
 
     const updatedUser = new User({
       id: existingUser.id,
-
-      name:
-        input.name !== undefined
-          ? input.name
-          : existingUser.name,
-
-      email:
-        input.email !== undefined
-          ? input.email
-          : existingUser.email,
-
-      role:
-        input.role !== undefined
-          ? input.role
-          : existingUser.role,
-
+      name: input.name ?? existingUser.name,
+      email: input.email ?? existingUser.email,
+      role: input.role ?? existingUser.role,
       createdAt: existingUser.createdAt,
       updatedAt: new Date(),
     });
@@ -47,10 +34,11 @@ export class UpdateUser {
     const userWithSameEmail =
       await this.userRepository.findByEmail(updatedUser.email);
 
-    if (
-      userWithSameEmail &&
-      userWithSameEmail.id !== existingUser.id
-    ) {
+    const emailBelongsToAnotherUser =
+      userWithSameEmail !== null &&
+      userWithSameEmail.id !== existingUser.id;
+
+    if (emailBelongsToAnotherUser) {
       throw new EmailAlreadyExistsError();
     }
 

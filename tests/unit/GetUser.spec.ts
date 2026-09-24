@@ -33,6 +33,6 @@ it("should reject when user does not exist", async () => {
   const getUser = new GetUser(repository);
 
   await expect(
-    getUser.execute("non-existing-user-id"),
+    getUser.execute("non-existing-ugit ser-id"),
   ).rejects.toThrow("User not found.");
 });
